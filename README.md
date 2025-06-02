@@ -9,8 +9,3 @@ This module adds a floating 5-star GTA-style wanted level tracker for GMs in Fou
 - 🟊 Draggable UI
 - 🟊 Saved between sessions
 - 🟊 GM-only
-
-## Installation
-
-Paste this into Foundry’s **Install Module** window:
-
