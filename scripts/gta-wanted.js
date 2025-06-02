@@ -1,4 +1,4 @@
-// Register wanted level setting
+
 Hooks.once("init", () => {
   game.settings.register("gta-wanted-system", "wantedLevel", {
     scope: "world",
@@ -8,37 +8,39 @@ Hooks.once("init", () => {
   });
 });
 
-// Render UI for all users
 Hooks.once("ready", () => {
   const level = game.settings.get("gta-wanted-system", "wantedLevel");
   renderWantedUI(level);
 });
 
-// Render the star UI panel
 function renderWantedUI(level) {
   const container = document.createElement("div");
   container.id = "gta-wanted-container";
+
+  const dragBar = document.createElement("div");
+  dragBar.className = "wanted-drag-handle";
+  container.appendChild(dragBar);
+
+  const starsWrapper = document.createElement("div");
+  starsWrapper.className = "wanted-stars";
 
   for (let i = 1; i <= 5; i++) {
     const star = document.createElement("img");
     star.className = "wanted-star";
     star.dataset.index = i;
-    container.appendChild(star);
+    starsWrapper.appendChild(star);
   }
 
-  makeDraggable(container);
+  container.appendChild(starsWrapper);
+  makeDraggable(container, dragBar);
   updateStars(level);
 
-  // Disable right-click menu
   container.oncontextmenu = () => false;
-
-  // Tooltip to explain who can click
   container.title = game.user.isGM
     ? "Left click to raise, right click to lower"
     : "Wanted Level (view only)";
 
-  // Only GMs can change the level
-  container.addEventListener("mousedown", (e) => {
+  starsWrapper.addEventListener("mousedown", (e) => {
     if (!game.user.isGM) return;
 
     e.preventDefault();
@@ -51,14 +53,13 @@ function renderWantedUI(level) {
     }
 
     game.settings.set("gta-wanted-system", "wantedLevel", lvl);
-    updateStars(lvl);
+    updateStars(lvl, true);
   });
 
   document.body.appendChild(container);
 }
 
-// Updates stars based on current level
-function updateStars(level) {
+function updateStars(level, animate = false) {
   const stars = document.querySelectorAll(".wanted-star");
   stars.forEach((star, i) => {
     const diff = level - i;
@@ -70,19 +71,21 @@ function updateStars(level) {
     } else {
       star.src = "modules/gta-wanted-system/icons/star-empty.png";
     }
+
+    if (animate) {
+      star.classList.remove("pulse");
+      void star.offsetWidth;
+      star.classList.add("pulse");
+    }
   });
 }
 
-// Enables dragging the container
-function makeDraggable(element) {
+function makeDraggable(element, handle) {
   let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
 
-  element.onmousedown = dragMouseDown;
+  handle.onmousedown = dragMouseDown;
 
   function dragMouseDown(e) {
-    // Prevent dragging if they click a star to change level
-    if (e.target.classList.contains("wanted-star") && game.user.isGM) return;
-
     e.preventDefault();
     mouseX = e.clientX;
     mouseY = e.clientY;
