@@ -1,5 +1,5 @@
 # GTA Wanted System for FoundryVTT
-
+[GTA Wanted UI](https://i.imgur.com/SEvXnkG.png)
 This module adds a floating 5-star GTA-style wanted level tracker for GMs in Foundry Virtual Tabletop.
 
 ## Features
