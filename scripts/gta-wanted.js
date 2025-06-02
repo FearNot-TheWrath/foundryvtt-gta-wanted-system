@@ -8,15 +8,13 @@ Hooks.once("init", () => {
   });
 });
 
-// Build UI when ready
+// Render UI for all users
 Hooks.once("ready", () => {
-  if (!game.user.isGM) return;
-
   const level = game.settings.get("gta-wanted-system", "wantedLevel");
   renderWantedUI(level);
 });
 
-// Renders the draggable star tracker
+// Render the star UI panel
 function renderWantedUI(level) {
   const container = document.createElement("div");
   container.id = "gta-wanted-container";
@@ -31,19 +29,24 @@ function renderWantedUI(level) {
   makeDraggable(container);
   updateStars(level);
 
-  // Prevent browser right-click menu
+  // Disable right-click menu
   container.oncontextmenu = () => false;
 
-  // Click handler for increasing/decreasing level
+  // Tooltip to explain who can click
+  container.title = game.user.isGM
+    ? "Left click to raise, right click to lower"
+    : "Wanted Level (view only)";
+
+  // Only GMs can change the level
   container.addEventListener("mousedown", (e) => {
+    if (!game.user.isGM) return;
+
     e.preventDefault();
     let lvl = game.settings.get("gta-wanted-system", "wantedLevel");
 
     if (e.button === 0) {
-      // Left-click: Increase
       lvl = Math.min(5, lvl + 0.5);
     } else if (e.button === 2) {
-      // Right-click: Decrease
       lvl = Math.max(0, lvl - 0.5);
     }
 
@@ -54,7 +57,7 @@ function renderWantedUI(level) {
   document.body.appendChild(container);
 }
 
-// Update star visuals
+// Updates stars based on current level
 function updateStars(level) {
   const stars = document.querySelectorAll(".wanted-star");
   stars.forEach((star, i) => {
@@ -70,13 +73,16 @@ function updateStars(level) {
   });
 }
 
-// Make the container draggable
+// Enables dragging the container
 function makeDraggable(element) {
   let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
 
   element.onmousedown = dragMouseDown;
 
   function dragMouseDown(e) {
+    // Prevent dragging if they click a star to change level
+    if (e.target.classList.contains("wanted-star") && game.user.isGM) return;
+
     e.preventDefault();
     mouseX = e.clientX;
     mouseY = e.clientY;
@@ -92,7 +98,7 @@ function makeDraggable(element) {
     mouseY = e.clientY;
     element.style.top = (element.offsetTop - posY) + "px";
     element.style.left = (element.offsetLeft - posX) + "px";
-    element.style.right = "auto"; // Reset right so left works again
+    element.style.right = "auto";
   }
 
   function closeDrag() {
