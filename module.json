@@ -1,12 +1,13 @@
 {
   "name": "gta-wanted-system",
   "title": "GTA Wanted System",
-  "description": "Displays a 5-star GTA-style wanted system for GMs",
-  "version": "0.1.0",
-  "author": "The Online DM",
+  "description": "A FoundryVTT module that adds a draggable 5-star GTA-style wanted system for GMs.",
+  "version": "1.0.0",
+  "author": "FearNotTheWrath",
   "minimumCoreVersion": "12",
+  "compatibleCoreVersion": "12",
   "scripts": ["scripts/gta-wanted.js"],
   "styles": ["styles/gta-wanted.css"],
-  "manifest": "https://yourdomain.com/gta-wanted/module.json",
-  "download": "https://yourdomain.com/gta-wanted/gta-wanted.zip"
+  "manifest": "https://raw.githubusercontent.com/FearNot-TheWrath/foundryvtt-gta-wanted-system/master/module.json",
+  "download": "https://github.com/FearNot-TheWrath/foundryvtt-gta-wanted-system/archive/refs/heads/master.zip"
 }
